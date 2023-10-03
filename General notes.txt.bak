@@ -7,3 +7,9 @@ Approach 2: Using IFRAMES.
 In the react app the flutter website can be integrated using iframes. 
 
 Approach 3: Implementing model in frontend react.js
+Re-creating the entire model for using in frontend reactjs. This will take more time
+
+
+
+Flask backend:
+Create 3 routes with 3 different models.

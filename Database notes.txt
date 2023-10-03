@@ -1,8 +1,11 @@
-Databases required
+Databases required 		() = modified by
 
 User (node.js)
 id, username, password, age, height, gender.
 
 Exercise (flask)
 User_id, date_initialized, total_time_taken, rep_count.
+
+Types of Exercises (node)
+exercise_name, description, image, models_used, model_url.
 
