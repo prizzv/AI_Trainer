@@ -1,0 +1,15 @@
+Different ways to deploy ML model to frontend 
+
+Approach 1 : Using web sockets.
+The user video can be taken from frontend and given to the backend were the sufficient operations can be made and returned a response to the frontend. The response would be a simple text based response.
+
+Approach 2: Using IFRAMES.
+In the react app the flutter website can be integrated using iframes. 
+
+Approach 3: Implementing model in frontend react.js
+Re-creating the entire model for using in frontend reactjs. This will take more time
+
+
+
+Flask backend:
+Create 3 routes with 3 different models.
