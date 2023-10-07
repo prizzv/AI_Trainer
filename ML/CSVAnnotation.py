@@ -19,7 +19,7 @@ def createCSV(fileName):
         csv_writer = csv.writer(f,delimiter = ',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         csv_writer.writerow(landmarks)
 
-# createCSV('deadlift.csv')
+# createCSV('annotations/push-up.csv')
 
 def export_landmark(results,action, csvPath):
     try:
@@ -76,10 +76,10 @@ def annotateCSV(videoPath, csvPath):
 
 def runAnnotation(datasetDir, csvPath):
     # looping through all the training video files for annotation
-    for file in os.listdir('dataset/deadlift'):
+    for file in os.listdir(datasetDir):
         
         if file.endswith('.mp4'):
             print(file)
             annotateCSV(f"{datasetDir}/{file}", csvPath)
 
-runAnnotation('dataset/deadlift', 'deadlift.csv')
+runAnnotation('dataset/push-up', 'annotations/push-up.csv')
