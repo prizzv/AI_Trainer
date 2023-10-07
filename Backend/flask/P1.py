@@ -1,26 +1,22 @@
 from flask import Flask, render_template, request, jsonify, Response
-# import cv2
-import mediapipe as mp
 import cv2
-import numpy as np
 import pickle
-# import pandas as pd
 
 app = Flask(__name__)
 model = pickle.load(open('deadlift.pkl', 'rb'))
-# camera = cv2.VideoCapture(0)
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template('index.html')
 
-@app.route('/pose_detect')
+@app.route('/video_feed')
 def predictPose():
+    import mediapipe as mp
+    import numpy as np
+    import pandas as pd
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
-    # with open('deadlift.pkl','rb') as f:
-    #     model = pickle.load(f)
-
+    
     cap = cv2.VideoCapture(0)
     counter = 0
     current_stage = ''
@@ -48,6 +44,7 @@ def predictPose():
 
             try:
                 row = np.array([[res.x, res.y, res.z, res.visibility] for res in results.pose_landmarks.landmark]).flatten().tolist()
+               
                 X = pd.DataFrame([row],columns=landmarks[1:])
                 body_language_class = model.predict(X)[0]
                 body_language_prob = model.predict_proba(X)[0]
