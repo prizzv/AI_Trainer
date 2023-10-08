@@ -2,6 +2,24 @@ from flask import Flask, render_template, request, jsonify, Response
 import cv2
 import pickle
 
+from gtts import gTTS
+
+text = "You're doing it wrong"
+text_left = "Move towards right"
+text_right = "Move towards left"
+slow = True
+tts = gTTS(text, slow=slow)
+# tts.save("voice_message.mp3")
+tts1 = gTTS(text_left)
+tts2 = gTTS(text_right)
+# tts1.save("voice_message_01.mp3")
+# tts2.save("voice_message_02.mp3")
+from playsound import playsound
+path_00 = "voice_message.mp3"
+path_left = "voice_message_01.mp3"
+path_right = "voice_message_02.mp3"
+playsound(path_00)
+
 app = Flask(__name__)
 model = pickle.load(open('deadlift.pkl', 'rb'))
 
@@ -16,7 +34,7 @@ def predictPose():
     import pandas as pd
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
-
+    
     cap = cv2.VideoCapture(0)
     counter = 0
     current_stage = ''

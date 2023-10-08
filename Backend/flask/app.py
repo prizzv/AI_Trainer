@@ -4,6 +4,7 @@ import cv2
 import pose_detector
 
 app = Flask(__name__)
+camera = cv2.VideoCapture(0)
 
 def gen_frames(camera):
     while camera.isOpened():
@@ -23,9 +24,6 @@ def gen_frames(camera):
     camera.release()
     cv2.destroyAllWindows()
 
-@app.route('/')
-def index():
-    return render_template('index.html')
 
 @app.route('/video_feed')
 def video_feed():
