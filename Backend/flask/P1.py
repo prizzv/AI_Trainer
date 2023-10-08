@@ -35,6 +35,8 @@ def predictPose():
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
 
+    cap = cv2.VideoCapture(0)
+
     cap = cv2.VideoCapture(2)
     counter = 0
     current_stage = ''
@@ -96,7 +98,7 @@ def predictPose():
                 print(e)
                 pass
             
-            cv2.imshow('Raw Webcam Feed',image)
+            # cv2.imshow('Raw Webcam Feed',image)
 
             if(cv2.waitKey(10) & 0xFF == ord('q')):
                 break

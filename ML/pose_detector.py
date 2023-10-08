@@ -17,6 +17,10 @@ def predictPose():
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         while cap.isOpened():
             ret, frame = cap.read()
+
+            if not ret:
+                print("Can't receive frame (stream end?). Exiting ...")
+                break
             
             #Recolor Feed
             image = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
@@ -35,6 +39,10 @@ def predictPose():
                                     mp_drawing.DrawingSpec(color=(245,66,230),thickness=2,circle_radius=2)
                                     )
 
+            landmarks = ['class']
+            for val in range(1,33+1):
+                landmarks += ['x{}'.format(val),'y{}'.format(val), 'z{}'.format(val), 'v{}'.format(val)]
+                
             try:
                 row = np.array([[res.x, res.y, res.z, res.visibility] for res in results.pose_landmarks.landmark]).flatten().tolist()
                 X = pd.DataFrame([row],columns=landmarks[1:])
