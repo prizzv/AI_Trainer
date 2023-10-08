@@ -3,13 +3,19 @@ import cv2
 import numpy as np
 import pickle
 import pandas as pd
+import voice01
 
-def predictPose(frame, modelPath):
+def predictPose(frame, modelPath, leanPath,hipsPath):
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
 
     with open(modelPath,'rb') as f:
         model = pickle.load(f)
+    with open(leanPath,'rb') as f:
+        leanModel = pickle.load(f)
+
+    with open(hipsPath,'rb') as f:
+        hipsModel = pickle.load(f)
 
     counter = 0
     current_stage = ''
@@ -42,14 +48,27 @@ def predictPose(frame, modelPath):
             X = pd.DataFrame([row],columns=landmarks[1:])
             body_language_class = model.predict(X)[0]
             body_language_prob = model.predict_proba(X)[0]
-            print(body_language_class,body_language_prob)
+            print('body model',body_language_class,body_language_prob)
+            
+            lean_class = leanModel.predict(X)[0]
+            # lean_proba = leanModel.predict_proba(X)[0]
+            print('lean model', lean_class)
+
+            # if(lean_class == 'right'):
+                # voice01.voiceAssistant("voice_message_02.mp3")
+                # return image
+            # elif(lean_class == 'left'):
+                # voice01.voiceAssistant("voice_message_01.mp3")
+                # return image
+
+            
 
             if body_language_class == 'down' and body_language_prob[body_language_prob.argmax()] >= 0.7:
                 current_stage = 'down'
             elif current_stage == 'down' and body_language_class == 'up' and body_language_prob[body_language_prob.argmax()] >= 0.7:
                 current_stage = 'up'
                 counter += 1
-                print(current_stage,counter)
+                print(current_stage, counter)
 
             #Get status box
             cv2.rectangle(image,(0,0),(225,73),(245,117,16),-1)
