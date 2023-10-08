@@ -16,7 +16,7 @@ def predictPose():
     import pandas as pd
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
-    
+
     cap = cv2.VideoCapture(0)
     counter = 0
     current_stage = ''
@@ -24,6 +24,9 @@ def predictPose():
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         while cap.isOpened():
             ret, frame = cap.read()
+            if not ret:
+                print("Can't receive frame (stream end?). Exiting ...")
+                break
             
             #Recolor Feed
             image = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
@@ -44,7 +47,6 @@ def predictPose():
 
             try:
                 row = np.array([[res.x, res.y, res.z, res.visibility] for res in results.pose_landmarks.landmark]).flatten().tolist()
-               
                 X = pd.DataFrame([row],columns=landmarks[1:])
                 body_language_class = model.predict(X)[0]
                 body_language_prob = model.predict_proba(X)[0]
@@ -76,13 +78,15 @@ def predictPose():
                 print(e)
                 pass
             
-            cv2.imshow('Raw Webcam Feed',image)
+            # cv2.imshow('Raw Webcam Feed',image)
 
             if(cv2.waitKey(10) & 0xFF == ord('q')):
                 break
 
     cap.release()
     cv2.destroyAllWindows()
+    
+    return "Pose detection complete"
 
 if __name__ == '__main__':
     app.run(debug=True)
