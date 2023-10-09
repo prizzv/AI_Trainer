@@ -6,16 +6,21 @@ import pose_detector
 
 app = Flask(__name__)
 
-@app.route('/model')
-def modelsPage():
+@app.route('/model/deadlift')
+def deadliftModelPage():
     time = request.args.get('time')
     userName = request.args.get('userName')
-    print(time)
-    print(userName)
 
-    return render_template('index.html',time=time, userName=userName)
+    return render_template('index.html',time=time, userName=userName, model='deadlift')
 
-def gen_frames(camera, seconds_to_run):
+@app.route('/model/push-up')
+def pushUpModelPage():
+    time = request.args.get('time')
+    userName = request.args.get('userName')
+
+    return render_template('index.html',time=time, userName=userName, model='push-up')
+
+def gen_frames(camera, seconds_to_run, modelPath):
     start_time = time.time()
 
     while camera.isOpened():
@@ -27,7 +32,10 @@ def gen_frames(camera, seconds_to_run):
         if not success:
             break
         else:
-            frame = pose_detector.predictPose(frame,'models/deadlift/deadlift.pkl', 'models/deadlift/lean.pkl', 'models/deadlift/hips.pkl')
+            if modelPath == 'models/deadlift/deadlift.pkl':
+                frame = pose_detector.predictPose(frame, modelPath, 'models/deadlift/lean.pkl', 'models/deadlift/hips.pkl')
+            else :
+                frame = pose_detector.predictPose(frame, modelPath)
 
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
@@ -44,11 +52,18 @@ def gen_frames(camera, seconds_to_run):
 
 @app.route('/video_feed')
 def video_feed():
+    
     time = int(request.args.get('time'))
-    print("video_feed", time)
+    modelName = request.args.get('modelname')
+
+    if(modelName == 'deadlift'):
+        modelPath = 'models/deadlift/deadlift.pkl'
+    elif(modelName == 'push-up'):
+        modelPath = 'models/push-up/push-up.pkl'
+    
     camera = cv2.VideoCapture(0)
     
-    return Response(gen_frames(camera, time),mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(gen_frames(camera, time, modelPath),mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     app.run(debug=True)

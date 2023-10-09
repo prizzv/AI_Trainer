@@ -5,17 +5,20 @@ import pickle
 import pandas as pd
 import voice01
 
-def predictPose(frame, modelPath, leanPath,hipsPath):
+def predictPose(frame, modelPath, leanPath=None, hipsPath=None):
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
 
     with open(modelPath,'rb') as f:
         model = pickle.load(f)
-    with open(leanPath,'rb') as f:
-        leanModel = pickle.load(f)
 
-    with open(hipsPath,'rb') as f:
-        hipsModel = pickle.load(f)
+    if( leanPath != None):
+        with open(leanPath,'rb') as f:
+            leanModel = pickle.load(f)
+
+    if( hipsPath != None):
+        with open(hipsPath,'rb') as f:
+            hipsModel = pickle.load(f)
 
     counter = 0
     current_stage = ''
@@ -50,9 +53,9 @@ def predictPose(frame, modelPath, leanPath,hipsPath):
             body_language_prob = model.predict_proba(X)[0]
             print('body model',body_language_class,body_language_prob)
             
-            lean_class = leanModel.predict(X)[0]
-            # lean_proba = leanModel.predict_proba(X)[0]
-            print('lean model', lean_class)
+            # lean_class = leanModel.predict(X)[0]
+            # # lean_proba = leanModel.predict_proba(X)[0]
+            # print('lean model', lean_class)
 
             # if(lean_class == 'right'):
                 # voice01.voiceAssistant("voice_message_02.mp3")
