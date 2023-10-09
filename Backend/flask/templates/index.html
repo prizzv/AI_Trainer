@@ -1,15 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+    <title>AI Gym</title>
+    <link rel="stylesheet" href="static/css/styles.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
 </head>
+
 <body>
-    <h1>Live streaming</h1>
+    <div style="margin-bottom: 20px;">
+        <span class="timer" id="timer">{{time}}s</span>
+        <progress max="{{time}}" value="{{time}}" class="progress progress--rest" id="progressBar">
+        </progress>
+    </div>
 
     <div>
-        <img src="{{url_for('video_feed')}}" width="50%" alt="">
+        <img src="{{ url_for('video_feed', time=time)}}" width="100%" alt="">
     </div>
 </body>
-</html> 
+
+<script type="application/javascript">
+    const timerElement = document.getElementById('timer');
+    const progressBar = document.getElementById('progressBar');
+    
+    let timerCounter = progressBar.max;
+    const interval = setInterval(() => {
+        timerCounter--;
+        timerElement.innerHTML = timerCounter + 's';
+        progressBar.value = timerCounter;
+        if (timerCounter <= 0) {
+            clearInterval(interval);
+        }
+    }, 1000);
+</script>
+
+</html>
