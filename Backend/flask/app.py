@@ -7,9 +7,14 @@ import pose_detector
 app = Flask(__name__)
 
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+@app.route('/model')
+def modelsPage():
+    time = request.args.get('time')
+    userName = request.args.get('userName')
+    print(time)
+    print(userName)
+
+    return render_template('index.html',time=time, userName=userName)
 
 
 
@@ -39,10 +44,11 @@ def index():
 
 @app.route('/video_feed')
 def video_feed():
-
+    time = int(request.args.get('time'))
+    print("video_feed", time)
     camera = cv2.VideoCapture(0)
     
-    return Response(gen_frames(camera,5),mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(gen_frames(camera, time),mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     app.run(debug=True)
