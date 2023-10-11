@@ -5,23 +5,10 @@ import cv2
 import pose_detector
 
 app = Flask(__name__)
+camera = cv2.VideoCapture(0)
 
-
-@app.route('/model')
-def modelsPage():
-    time = request.args.get('time')
-    userName = request.args.get('userName')
-    print(time)
-    print(userName)
-
-    return render_template('index.html',time=time, userName=userName)
-
-
-
-    while camera.isOpened():
-        current_time = time.time()
-        elapsed_time = current_time - start_time
-
+def gen_frames():
+    while True:
         # Reads the camera frame
         success, frame = camera.read()
         if not success:
