@@ -1,12 +1,4 @@
-import pygame
+import subprocess
 
-def voiceAssistant(messagePath):
-    pygame.mixer.init()
-
-    test_01 = pygame.mixer.Sound(messagePath)
-
-    test_01.play()
-
-    pygame.time.wait(10000)
-
-    pygame.quit()
+sound_file = "voice_message_01.mp3"
+subprocess.Popen(['cvlc', '--play-and-exit', sound_file])

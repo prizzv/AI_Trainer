@@ -49,7 +49,6 @@ def gen_frames(camera, seconds_to_run, modelPath):
     camera.release()
     cv2.destroyAllWindows()
 
-
 @app.route('/video_feed')
 def video_feed():
     

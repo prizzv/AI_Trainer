@@ -1,0 +1,18 @@
+UserSchema
+	username
+	phoneNumber
+	password
+	height
+	age
+	accessToken
+	refreshToken
+
+WorkoutModel
+	userId
+	workoutType
+	startTime
+	endTime
+
+
+
+	

@@ -3,7 +3,19 @@ import cv2
 import numpy as np
 import pickle
 import pandas as pd
-import voice01
+import warnings
+import pyttsx3
+import psycopg2 as ps
+
+warnings.filterwarnings("ignore")
+
+engine = pyttsx3.init()
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[1].id)
+
+def talk(text):
+    engine.say(text)
+    engine.runAndWait()
 
 def predictPose(frame, modelPath, leanPath=None, hipsPath=None):
     mp_drawing = mp.solutions.drawing_utils
@@ -53,18 +65,16 @@ def predictPose(frame, modelPath, leanPath=None, hipsPath=None):
             body_language_prob = model.predict_proba(X)[0]
             print('body model',body_language_class,body_language_prob)
             
-            # lean_class = leanModel.predict(X)[0]
-            # # lean_proba = leanModel.predict_proba(X)[0]
-            # print('lean model', lean_class)
+            lean_class = leanModel.predict(X)[0]
+            # lean_proba = leanModel.predict_proba(X)[0]
+            print('lean model', lean_class)
 
-            # if(lean_class == 'right'):
-                # voice01.voiceAssistant("voice_message_02.mp3")
+            if(lean_class == 'right'):
+                talk("Move to left")
                 # return image
-            # elif(lean_class == 'left'):
-                # voice01.voiceAssistant("voice_message_01.mp3")
+            elif(lean_class == 'left'):
+                talk("Move to right")
                 # return image
-
-            
 
             if body_language_class == 'down' and body_language_prob[body_language_prob.argmax()] >= 0.7:
                 current_stage = 'down'
