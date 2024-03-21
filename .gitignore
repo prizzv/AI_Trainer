@@ -4,3 +4,4 @@ press.avi
 flaskEnv
 videoData
 __pycache__
+.env
