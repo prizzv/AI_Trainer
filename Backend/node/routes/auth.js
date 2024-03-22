@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
 
 const AuthController = require("../controllers/auth");
+
+const upload = multer({ dest: "uploads/" });
 
 /* GET home page. */
 router.post("/login", AuthController.login);

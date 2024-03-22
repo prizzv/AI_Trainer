@@ -1,4 +1,4 @@
-export const GenderType = {
+module.exports.GenderType = {
     MALE: "male",
     FEMALE: "female",
 };

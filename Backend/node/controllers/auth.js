@@ -1,7 +1,7 @@
 const UserProfileModel = require("../models/userProfile");
 const AuthModel = require("../models/auth");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 
 const {
     setAccessTokenCookiesToResponse,
@@ -12,8 +12,24 @@ const {
 // create a new user
 const register = async (req, res) => {
     try {
-        const { email, password, username } = req.body;
-        const { name, age, height, gender } = req.body;
+        const { email, password, username, name, age, height, gender } =
+            req.body;
+        console.log(req.body);
+
+        // check if all fields are provided
+        if (
+            !email ||
+            !password ||
+            !username ||
+            !name ||
+            !age ||
+            !height ||
+            !gender
+        ) {
+            return res
+                .status(400)
+                .json({ success: false, error: "All fields are required" });
+        }
 
         // Verify if the user already exists
         const existingUserAuth = await AuthModel.findOne({ email });
@@ -50,11 +66,11 @@ const register = async (req, res) => {
             gender,
         });
 
-        const token = setAuthCookies(res, newUserAuth, true);
+        const token = setAuthCookies(res, newUser, true);
         console.log({ token });
 
-        await newUserAuth.save();
-        await newUser.save();
+        // await newUserAuth.save();
+        // await newUser.save();
 
         res.status(201).json({ data: { newUser, token } });
     } catch (error) {
@@ -68,11 +84,9 @@ const login = async (req, res) => {
         const { email, password } = req.body;
         const user = await UserProfileModel.findByCredentials(email, password);
         if (!user) {
-            return res
-                .status(401)
-                .send({
-                    error: "Login failed! Check authentication credentials",
-                });
+            return res.status(401).send({
+                error: "Login failed! Check authentication credentials",
+            });
         }
         const token = await user.generateAuthToken();
         res.send({ user, token });
