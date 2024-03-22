@@ -19,5 +19,5 @@ Create 3 routes with 3 different models.
 
 Flask Tasks
 Connecting mogodb with flask
-creating flask routes
+Creating flask routes
 Create api for Exercises table

@@ -10,6 +10,14 @@ Approach 3: Implementing model in frontend react.js
 Re-creating the entire model for using in frontend reactjs. This will take more time
 
 
+Node backend tasks:
+Create auth.
+create apis for types of exercises.
 
 Flask backend:
 Create 3 routes with 3 different models.
+
+Flask Tasks
+Connecting mogodb with flask
+creating flask routes
+Create api for Exercises table
