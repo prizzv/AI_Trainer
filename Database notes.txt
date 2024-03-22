@@ -2,14 +2,20 @@ Databases required 		() = modified by
 
 User (node.js)
 	id, 
-	username, 
-	password, 
-	age, 
+	name,
+	age,
 	height, 
-	gender, 
-	accessToken,
-	refreshToken.
+	gender.
 
+Auth
+	username,
+	email,
+	phoneNumber,
+	password,
+	accessToken,
+	refreshToken,
+	role.
+	
 Exercise (flask)
 User_id, date_initialized, total_time_taken, rep_count.
 

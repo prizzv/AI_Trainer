@@ -21,3 +21,19 @@ Flask Tasks
 Connecting mogodb with flask
 Creating flask routes
 Create api for Exercises table
+
+
+
+// Steps for implementing the backend 
+
+create user auth  -- completed registration, login, profile routes
+check how to implement the ML model in the JavaScript Backend and the model should run in the server side itself.
+check socket implementation react and node.
+	implement sockets in react and backend.
+
+Alternative if sockets does not work check how to implement in frontend itself.
+
+// Steps for implementing the frontend
+create login signup page in frontend
+create profile page in frontend like a dashboard
+create a page which takes the users camera and shows the exercises done by him.
