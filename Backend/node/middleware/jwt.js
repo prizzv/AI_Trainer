@@ -6,9 +6,7 @@ const UserProfileModel = require("../models/userProfile");
 
 const { setAccessTokenCookiesToResponse } = require("../utils/authCookie");
 
-const TryCatch = require("../providers/TryCatch");
-const { CustomError } = require("../config/custom-error");
-const { AUTH_ERRORS, COMMON_ERRORS } = require("../messages/errors");
+const { ExpressError } = require("../utils/ExpressError");
 
 const verifyRefreshToken = async (refreshToken, next) => {
     return new Promise(async (resolve, reject) => {
@@ -17,155 +15,100 @@ const verifyRefreshToken = async (refreshToken, next) => {
             process.env.JWT_REFRESH_SECRET
         );
 
-        const userAuth = await AuthModel.findById(decoded.user_id);
+        const userAuth = await AuthModel.findById(decoded.userAuthId);
+
+        const userProfile = await UserProfileModel.findById(
+            decoded.userProfileId
+        );
 
         if (!userAuth) {
-            next(new CustomError(AUTH_ERRORS.LOGIN_EXPIRED, 401));
+            next(new ExpressError("Login Expired please Login again", 401));
         } else {
-            resolve(userAuth);
+            resolve({ userAuth, userProfile });
         }
     });
 };
 
-const protect = (allowedRoutes = ["Regular"]) =>
-    TryCatch(async (req, res, next) => {
-        const accessToken = req.cookies?.accessToken;
-        const refreshToken = req.cookies?.refreshToken;
+const verifyAccessToken = async (accessToken, next) => {
+    return new Promise(async (resolve, reject) => {
+        const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET);
 
-        if (refreshToken === undefined) {
-            return res
-                .status(401)
-                .json({ success: false, error: COMMON_ERRORS.UNAUTHORIZED });
-        }
+        const userAuth = await AuthModel.findById(decoded.userAuthId);
 
-        try {
-            if (accessToken) {
-                const decoded = await jwt.verify(
-                    accessToken,
-                    process.env.JWT_ACCESS_SECRET
-                );
+        const userProfile = await UserProfileModel.findById(
+            decoded.userProfileId
+        );
 
-                const userAuth = await AuthModel.findById(decoded.user_id);
-
-                if (!userAuth) {
-                    return res.status(400).json({
-                        success: false,
-                        error: AUTH_ERRORS.LOGIN_EXPIRED,
-                    });
-                }
-
-                const userProfile = await UserProfileModel.findById(
-                    userAuth.profileId
-                );
-
-                merge(req, {
-                    intercept: {
-                        auth: userAuth,
-                        profile: userProfile,
-                    },
-                });
-
-                // Check user's access against the allowed routes
-                if (Array.isArray(userAuth.accessRoles)) {
-                    if (allowedRoutes.includes("Regular")) return next();
-
-                    const hasAccess = userAuth.accessRoles.some((role) =>
-                        allowedRoutes.includes(role)
-                    );
-
-                    if (!hasAccess) {
-                        return res
-                            .status(403)
-                            .json({
-                                success: false,
-                                error: COMMON_ERRORS.FORBIDDEN,
-                            });
-                    }
-                } else {
-                    return res
-                        .status(403)
-                        .json({
-                            success: false,
-                            error: COMMON_ERRORS.FORBIDDEN,
-                        });
-                }
-
-                return next();
-            } else {
-                const userAuth = await verifyRefreshToken(refreshToken, next);
-
-                setAccessTokenCookiesToResponse(res, userAuth._id.toString());
-
-                const userProfile = await UserProfileModel.findById(
-                    userAuth.profileId
-                );
-
-                merge(req, {
-                    intercept: {
-                        auth: userAuth,
-                        profile: userProfile,
-                    },
-                });
-
-                // Check user's access against the allowed routes
-                if (Array.isArray(userAuth.accessRoles)) {
-                    if (allowedRoutes.includes("Regular")) return next();
-
-                    const hasAccess = userAuth.accessRoles.some((role) =>
-                        allowedRoutes.includes(role)
-                    );
-
-                    if (!hasAccess) {
-                        return res
-                            .status(403)
-                            .json({
-                                success: false,
-                                error: COMMON_ERRORS.FORBIDDEN,
-                            });
-                    }
-                } else {
-                    return res
-                        .status(403)
-                        .json({
-                            success: false,
-                            error: COMMON_ERRORS.FORBIDDEN,
-                        });
-                }
-
-                return next();
-            }
-        } catch (error) {
-            // If the access token is invalid or has expired, clear the cookies
-            console.error("JWT Error :: ", error);
-
-            res.clearCookie("accessToken");
-            res.clearCookie("refreshToken");
-            return res
-                .status(401)
-                .json({ success: false, error: COMMON_ERRORS.UNAUTHORIZED });
+        if (!userAuth) {
+            next(new ExpressError("Login Expired please Login again", 401));
+        } else {
+            resolve({ userAuth, userProfile });
         }
     });
+};
 
-const isAuthenticated = TryCatch(async (req, res, next) => {
+const protect = async (req, res, next) => {
+    const accessToken = req.cookies?.accessToken;
     const refreshToken = req.cookies?.refreshToken;
 
     if (refreshToken === undefined) {
         return res
             .status(401)
-            .json({ success: false, error: COMMON_ERRORS.UNAUTHORIZED });
+            .json({ success: false, error: "JWT Token not provided" });
     }
 
     try {
-        const decoded = jwt.verify(
-            refreshToken,
-            process.env.JWT_REFRESH_SECRET
-        );
-        const userAuth = await verifyRefreshToken(refreshToken, next);
+        if (accessToken) {
+            console.log("Executing in access token block");
+            userData = await verifyAccessToken(accessToken, next);
 
-        if (!userAuth?.profileId) {
+            merge(req, {
+                intercept: {
+                    auth: userData.userAuth,
+                    profile: userData.userProfile,
+                },
+            });
+
+            return next();
+        } else {
+            console.log("Executing in refresh token block");
+            const userData = await verifyRefreshToken(refreshToken, next);
+
+            setAccessTokenCookiesToResponse(res, userData.userProfile, true);
+
+            merge(req, {
+                intercept: {
+                    auth: userData.userAuth,
+                    profile: userData.userProfile,
+                },
+            });
+
+            return next();
+        }
+    } catch (error) {
+        // If the access token is invalid or has expired, clear the cookies
+        console.error("JWT Error :: ", error);
+
+        res.clearCookie("accessToken");
+        res.clearCookie("refreshToken");
+        return res.status(401).json({ success: false, error: "Unauthorized" });
+    }
+};
+
+const isAuthenticated = async (req, res, next) => {
+    const refreshToken = req.cookies?.refreshToken;
+
+    if (refreshToken === undefined) {
+        return res.status(401).json({ success: false, error: "Unauthorized" });
+    }
+
+    try {
+        const userAuth = await verifyRefreshToken(refreshToken, next);
+        //TODO: ERROR HERE
+        if (!userAuth?.fa) {
             return res
                 .status(401)
-                .json({ success: false, error: COMMON_ERRORS.UNAUTHORIZED });
+                .json({ success: false, error: "Unauthorized" });
         }
 
         merge(req, {
@@ -176,8 +119,8 @@ const isAuthenticated = TryCatch(async (req, res, next) => {
 
         next();
     } catch (error) {
-        return next(new CustomError(COMMON_ERRORS.UNAUTHORIZED, 401));
+        return next(new ExpressError("Unauthorized", 401));
     }
-});
+};
 
-module.exports = protect;
+module.exports = { protect, isAuthenticated };

@@ -4,7 +4,7 @@ const setAccessTokenCookiesToResponse = (res, user, returnCookie) => {
     const payload = {
         userProfileId: user._id,
         userName: user.name,
-        userAuthID: user.authId,
+        userAuthId: user.authId,
     };
 
     const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
@@ -27,7 +27,7 @@ const setRefreshTokenCookiesToResponse = (res, user, returnCookie) => {
     const payload = {
         userProfileId: user._id,
         userName: user.name,
-        userAuthID: user.authId,
+        userAuthId: user.authId,
     };
     const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
         expiresIn: process.env.JWT_REFRESH_EXPIRY,

@@ -4,6 +4,7 @@ const multer = require("multer");
 
 const AuthController = require("../controllers/auth");
 const wrapAsync = require("../utils/wrapAsync");
+const { protect } = require("../middleware/jwt");
 
 const upload = multer({ dest: "uploads/" });
 
@@ -14,7 +15,7 @@ router.post("/register", wrapAsync(AuthController.register));
 
 router.post("/logout", wrapAsync(AuthController.logout));
 
-router.get("/profile", wrapAsync(AuthController.profile));
+router.get("/profile", protect, wrapAsync(AuthController.profile));
 
 router.post("forgot-password", wrapAsync(AuthController.forgotPassword));
 
