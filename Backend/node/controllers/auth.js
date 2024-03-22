@@ -12,15 +12,14 @@ const {
 // create a new user
 const register = async (req, res) => {
     try {
-        const { email, password, username, name, age, height, gender } =
+        const { email, password, userName, name, age, height, gender } =
             req.body;
-        console.log(req.body);
 
         // check if all fields are provided
         if (
             !email ||
             !password ||
-            !username ||
+            !userName ||
             !name ||
             !age ||
             !height ||
@@ -54,7 +53,7 @@ const register = async (req, res) => {
         const newUserAuth = new AuthModel({
             email,
             password: hashedPassword,
-            username,
+            userName,
         });
 
         //Create the user profile model
@@ -67,14 +66,19 @@ const register = async (req, res) => {
         });
 
         const token = setAuthCookies(res, newUser, true);
-        console.log({ token });
+
+        newUserAuth.accessToken = token.accessToken;
+        newUserAuth.refreshToken = token.refreshToken;
 
         // await newUserAuth.save();
         // await newUser.save();
+        data = newUser._doc;
+        data = { ...data, token };
 
-        res.status(201).json({ data: { newUser, token } });
+        return res.status(201).json({ data });
     } catch (error) {
-        res.status(400).json(error);
+        console.log({ error });
+        res.status(400).json({ error: error.message });
     }
 };
 
@@ -82,16 +86,29 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await UserProfileModel.findByCredentials(email, password);
-        if (!user) {
-            return res.status(401).send({
+        const userAuth = await AuthModel.findByCredentials(email, password);
+
+        if (!userAuth) {
+            return res.status(401).json({
                 error: "Login failed! Check authentication credentials",
             });
         }
-        const token = await user.generateAuthToken();
-        res.send({ user, token });
+        const user = await UserProfileModel.findOne({ authId: userAuth._id });
+
+        if (!user) {
+            return res.status(401).json({ error: "User not found" });
+        }
+
+        const token = setAuthCookies(res, user, true);
+        userAuth.accessToken = token.accessToken;
+        userAuth.refreshToken = token.refreshToken;
+        await userAuth.save();
+
+        const data = { ...user._doc, token };
+        return res.status(200).json({ success: true, data });
     } catch (error) {
-        res.status(400).send(error);
+        console.log({ error });
+        res.status(400).json({ error: error.message });
     }
 };
 
