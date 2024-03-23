@@ -1,22 +1,9 @@
-from flask import  render_template, request, jsonify, Response
-from aitrainer import app
+from flask import  request,  Response
+
 import cv2
 import time
-from . import pose_detector
-
-@app.route('/model/deadlift')
-def deadliftModelPage():
-    time = request.args.get('time')
-    userName = request.args.get('userName')
-
-    return render_template('index.html',time=time, userName=userName, model='deadlift')
-
-@app.route('/model/push-up')
-def pushUpModelPage():
-    time = request.args.get('time')
-    userName = request.args.get('userName')
-
-    return render_template('index.html',time=time, userName=userName, model='push-up')
+from ... import pose_detector
+from . import video_feed
 
 def gen_frames(camera, seconds_to_run, modelPath):
     start_time = time.time()
@@ -49,7 +36,7 @@ def gen_frames(camera, seconds_to_run, modelPath):
 
 
 
-@app.route('/video_feed')
+@video_feed.route('/')
 def video_feed():
     
     time = int(request.args.get('time'))

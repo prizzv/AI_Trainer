@@ -1,6 +1,20 @@
 from flask import Flask;
-from flask_socketio import SocketIO, emit
+from aitrainer.events import socketio
 
-app = Flask(__name__)
+from aitrainer.blueprints.mlModels import mlModels # Import the routes below the app 
+from aitrainer.blueprints.video_feed import video_feed
 
-from aitrainer import routes # Import the routes below the app 
+def create_app():
+    app = Flask(__name__)
+    # app.config.from_object("config")
+    
+    register_blueprints(app)
+    socketio.init_app(app)
+
+    return app
+
+def register_blueprints(app):
+        """Register blueprints with the flask application"""
+        app.register_blueprint(mlModels, url_prefix = '/model')
+        app.register_blueprint(video_feed, url_prefix = '/video_feed')
+        
