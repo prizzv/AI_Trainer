@@ -1,10 +1,8 @@
-from flask import Flask, render_template, request, jsonify, Response
-import time
-
+from flask import  render_template, request, jsonify, Response
+from aitrainer import app
 import cv2
-import pose_detector
-
-app = Flask(__name__)
+import time
+from . import pose_detector
 
 @app.route('/model/deadlift')
 def deadliftModelPage():
@@ -49,6 +47,8 @@ def gen_frames(camera, seconds_to_run, modelPath):
     camera.release()
     cv2.destroyAllWindows()
 
+
+
 @app.route('/video_feed')
 def video_feed():
     
@@ -56,13 +56,10 @@ def video_feed():
     modelName = request.args.get('modelname')
 
     if(modelName == 'deadlift'):
-        modelPath = 'models/deadlift/deadlift.pkl'
+        modelPath = 'aitrainer/models/deadlift/deadlift.pkl'
     elif(modelName == 'push-up'):
-        modelPath = 'models/push-up/push-up.pkl'
+        modelPath = 'aitrainer/models/push-up/push-up.pkl'
     
     camera = cv2.VideoCapture(0)
     
     return Response(gen_frames(camera, time, modelPath),mimetype='multipart/x-mixed-replace; boundary=frame')
-
-if __name__ == '__main__':
-    app.run(debug=True)
