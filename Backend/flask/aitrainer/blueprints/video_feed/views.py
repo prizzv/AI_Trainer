@@ -20,7 +20,7 @@ def gen_frames(camera, seconds_to_run, modelPath):
             if modelPath == 'models/deadlift/deadlift.pkl':
                 frame = pose_detector.predictPose(frame, modelPath, 'models/deadlift/lean.pkl', 'models/deadlift/hips.pkl')
             else :
-                frame = pose_detector.predictPose(frame, modelPath)
+                frame = pose_detector.predictPose(frame, modelPath, None, None)
 
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()

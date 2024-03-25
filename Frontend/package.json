@@ -12,7 +12,9 @@
     "react-horizontal-scrolling-menu": "^2.7.1",
     "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^6.3.0",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "react-webcam": "^7.2.0",
+    "socket.io-client": "^4.7.5"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -45,5 +47,11 @@
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.29.4",
     "eslint-plugin-react-hooks": "^4.4.0"
+  },
+  "opencv4nodejs": {
+    "disableAutoBuild": 1,
+    "opencvIncludeDir": "C:\\tools\\opencv\\build\\include",
+    "opencvLibDir": "C:\\tools\\opencv\\build\\x64\\vc16\\lib",
+    "opencvBinDir": "C:\\tools\\opencv\\build\\x64\\vc16\\bin"
   }
 }

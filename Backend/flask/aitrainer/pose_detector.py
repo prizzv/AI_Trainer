@@ -7,8 +7,6 @@ import warnings
 import pyttsx3
 import psycopg2 as ps
 
-# warnings.filterwarnings("ignore")
-
 # engine = pyttsx3.init()
 # voices = engine.getProperty('voices')
 # engine.setProperty('voice', voices[1].id)
@@ -23,11 +21,11 @@ def predictPose(frame, modelPath, leanPath=None, hipsPath=None):
 
     with open(modelPath,'rb') as f:
         model = pickle.load(f)
-
+    
     if( leanPath != None):
         with open(leanPath,'rb') as f:
             leanModel = pickle.load(f)
-
+    
     if( hipsPath != None):
         with open(hipsPath,'rb') as f:
             hipsModel = pickle.load(f)
