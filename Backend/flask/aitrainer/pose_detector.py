@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import pickle
 import pandas as pd
+from flask_socketio import emit
 
 counter = 0
 current_stage = ''
@@ -67,13 +68,15 @@ def predictPose(frame, modelPath, leanPath=None, hipsPath=None):
             #     talk("Move to right")
             #     # return image
 
-            if body_language_class == 'down' and body_language_prob[body_language_prob.argmax()] >= 0.6:
-                current_stage = 'down'
-                print("current_stage: down")
+            if body_language_class == 'down' and body_language_prob[body_language_prob.argmax()] >= 0.5:
+                if current_stage != 'down':
+                    current_stage = 'down'
+                    print("current_stage: down")
+
             elif current_stage == 'down' and body_language_class == 'up' and body_language_prob[body_language_prob.argmax()] >= 0.5:
                 current_stage = 'up'
                 counter += 1
-                print(current_stage, counter)
+                print("current_stage:", current_stage, "counter:", counter)
 
             #Get status box
             cv2.rectangle(image,(0,0),(225,73),(245,117,16),-1)
@@ -93,5 +96,5 @@ def predictPose(frame, modelPath, leanPath=None, hipsPath=None):
         except Exception as e:
             print(e)
             pass
-    
+        
         return image

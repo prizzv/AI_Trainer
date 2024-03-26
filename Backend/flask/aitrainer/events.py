@@ -16,18 +16,33 @@ def handle_disconnect():
     print('Client disconnected')
 
 @socketio.on('video_stream')
-def handle_video_stream(dataUrl):
-    frame = convertDataURlToFrame(dataUrl)
-    
-    convertedFrame = predictPose(frame, "aitrainer/models/deadlift/deadlift.pkl", None, None)
+def handle_video_stream(data):
+    dataURL = data.get('dataURL')
+    modelName = data.get('modelName')
+
+    frame = convertDataURlToFrame(dataURL)
+
+    convertedFrame = None
+    if(modelName == "deadlift"):
+        convertedFrame = predictPose(frame, "aitrainer/models/deadlift/deadlift.pkl", "aitrainer/models/deadlift/lean.pkl", "aitrainer/models/deadlift/hips.pkl")        
+    else:
+        convertedFrame = predictPose(frame, "aitrainer/models/push-up/push-up.pkl", None, None)
+
+    if convertedFrame is None:
+        raise("Error in converting frame")
+        
     convertedDataUrl = convertFrameToDataUrl(convertedFrame)
 
-    emit('video_stream', convertedDataUrl, broadcast=True)
+    newData = {
+        'dataURL': convertedDataUrl,
+    }
+
+    emit('video_stream', newData, broadcast=True)
 
 
-def convertDataURlToFrame(dataUrl):
+def convertDataURlToFrame(dataURL):
     # Extract the base64-encoded image data from the data URL
-    image_data = base64.b64decode(dataUrl.split(',')[1])
+    image_data = base64.b64decode(dataURL.split(',')[1])
 
     # Convert the image data to a NumPy array
     image_array = np.frombuffer(image_data, np.uint8)
