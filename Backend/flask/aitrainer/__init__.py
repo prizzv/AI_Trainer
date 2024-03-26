@@ -3,10 +3,11 @@ from aitrainer.events import socketio
 
 from aitrainer.blueprints.mlModels import mlModels # Import the routes below the app 
 from aitrainer.blueprints.video_feed import video_feed
+# from aitrainer.config import config
 
 def create_app():
     app = Flask(__name__)
-    # app.config.from_object("config")
+    app.config.from_object("config")
     
     register_blueprints(app)
     socketio.init_app(app)

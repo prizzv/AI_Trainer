@@ -15,9 +15,9 @@ Auth
 	accessToken,
 	refreshToken,
 	role.
-	
+
 Exercise (flask)
-User_id, date_initialized, total_time_taken, rep_count.
+User_id, date_initialized, total_time_taken, rep_count, exercise_name, model_used.
 
 WorkoutModel
 	userId

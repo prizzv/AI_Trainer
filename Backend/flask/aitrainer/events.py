@@ -14,6 +14,6 @@ def handle_disconnect():
 
 @socketio.on('video_stream')
 def handle_video_stream(data):
-    
+    # print(data)
     # frame = predictPose(data, "aitrainer/models/deadlift/deadlift.pkl", None, None)
     emit('video_stream', data, broadcast=True)
