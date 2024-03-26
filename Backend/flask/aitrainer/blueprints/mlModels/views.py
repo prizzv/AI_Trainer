@@ -2,7 +2,6 @@ from flask import  render_template, request, jsonify, Response
 
 from ..mlModels import mlModels
 
-
 @mlModels.route('/deadlift')
 def deadliftModelPage():
     time = request.args.get('time')

@@ -20,8 +20,8 @@ const App = () => {
 
   useEffect(() => {
     if (isRecording) {
-      const id = setInterval(captureFrame, 100); // Ideal interval 
-      // const id = setInterval(captureFrame, 2000);
+      const id = setInterval(captureFrame, 110); // Ideal interval 
+      // const id = setInterval(captureFrame, 4000);
       setIntervalId(id);
     } else {
       clearInterval(intervalId);
@@ -33,14 +33,16 @@ const App = () => {
 
   useEffect(() => {
     socket.on('video_stream', dataURL => {
-      setCapturedFrame(dataURL );
+      setCapturedFrame(dataURL);
     })
-  },[]);
+  }, []);
 
   const captureFrame = () => {
     if (webcamRef.current) {
+
       const canvas = webcamRef.current.getCanvas();
       const dataURL = canvas.toDataURL('image/png');
+      
       // Do the socket call here to send the dataURL to the server
       socket.emit('video_stream', dataURL);
     }
@@ -58,8 +60,8 @@ const App = () => {
       <button onClick={() => setIsRecording(!isRecording)}>
         {isRecording ? 'Stop Recording' : 'Start Recording'}
       </button>
-      {(capturedFrame != null)? <img src={capturedFrame} alt="captured frame" /> : null}
-        {/* <div key={frame.name}>
+      {(capturedFrame != null) ? <img src={capturedFrame} alt="captured frame" /> : null}
+      {/* <div key={frame.name}>
           <img src={frame.dataURL} alt={frame.name} />
         </div> */}
       {/* ))} */}

@@ -3,19 +3,14 @@ import cv2
 import numpy as np
 import pickle
 import pandas as pd
-import warnings
-import pyttsx3
-import psycopg2 as ps
 
-# engine = pyttsx3.init()
-# voices = engine.getProperty('voices')
-# engine.setProperty('voice', voices[1].id)
-
-# def talk(text):
-#     engine.say(text)
-#     engine.runAndWait()
+counter = 0
+current_stage = ''
 
 def predictPose(frame, modelPath, leanPath=None, hipsPath=None):
+    global counter
+    global current_stage
+
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
 
@@ -30,8 +25,6 @@ def predictPose(frame, modelPath, leanPath=None, hipsPath=None):
         with open(hipsPath,'rb') as f:
             hipsModel = pickle.load(f)
 
-    counter = 0
-    current_stage = ''
     #Initiate holistic model
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
 
@@ -74,9 +67,10 @@ def predictPose(frame, modelPath, leanPath=None, hipsPath=None):
             #     talk("Move to right")
             #     # return image
 
-            if body_language_class == 'down' and body_language_prob[body_language_prob.argmax()] >= 0.7:
+            if body_language_class == 'down' and body_language_prob[body_language_prob.argmax()] >= 0.6:
                 current_stage = 'down'
-            elif current_stage == 'down' and body_language_class == 'up' and body_language_prob[body_language_prob.argmax()] >= 0.7:
+                print("current_stage: down")
+            elif current_stage == 'down' and body_language_class == 'up' and body_language_prob[body_language_prob.argmax()] >= 0.5:
                 current_stage = 'up'
                 counter += 1
                 print(current_stage, counter)
@@ -84,16 +78,16 @@ def predictPose(frame, modelPath, leanPath=None, hipsPath=None):
             #Get status box
             cv2.rectangle(image,(0,0),(225,73),(245,117,16),-1)
 
-            #Display Class
-            cv2.putText(image,'CLASS',(15,12),cv2.FONT_HERSHEY_SIMPLEX,0.5,(0,0,0),1,cv2.LINE_AA)
-            cv2.putText(image,body_language_class.split(' ')[0],(90,40),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),2,cv2.LINE_AA)
-
             #Display Probability
-            cv2.putText(image,'PROB',(15,12),cv2.FONT_HERSHEY_SIMPLEX,0.5,(0,0,0),1,cv2.LINE_AA)
+            cv2.putText(image,'PROB',(10,12),cv2.FONT_HERSHEY_SIMPLEX,0.5,(0,0,0),1,cv2.LINE_AA)
             cv2.putText(image,str(round(body_language_prob[np.argmax(body_language_prob)],2)),(10,40),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),2,cv2.LINE_AA)
 
+            #Display Class
+            cv2.putText(image,'CLASS',(90,12),cv2.FONT_HERSHEY_SIMPLEX,0.5,(0,0,0),1,cv2.LINE_AA)
+            cv2.putText(image,body_language_class.split(' ')[0],(90,40),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),2,cv2.LINE_AA)
+
             #Display Counter
-            cv2.putText(image,'COUNTER',(15,12),cv2.FONT_HERSHEY_SIMPLEX,0.5,(0,0,0),1,cv2.LINE_AA)
+            cv2.putText(image,'COUNTER',(155,12),cv2.FONT_HERSHEY_SIMPLEX,0.5,(0,0,0),1,cv2.LINE_AA)
             cv2.putText(image,str(counter),(175,40),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),2,cv2.LINE_AA)
         
         except Exception as e:

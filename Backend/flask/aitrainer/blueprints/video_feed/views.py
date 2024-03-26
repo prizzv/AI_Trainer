@@ -17,8 +17,8 @@ def gen_frames(camera, seconds_to_run, modelPath):
         if not success:
             break
         else:
-            if modelPath == 'models/deadlift/deadlift.pkl':
-                frame = pose_detector.predictPose(frame, modelPath, 'models/deadlift/lean.pkl', 'models/deadlift/hips.pkl')
+            if modelPath == 'aitrainer/models/deadlift/deadlift.pkl':
+                frame = pose_detector.predictPose(frame, modelPath, 'aitrainer/models/deadlift/lean.pkl', 'aitrainer/models/deadlift/hips.pkl')
             else :
                 frame = pose_detector.predictPose(frame, modelPath, None, None)
 
