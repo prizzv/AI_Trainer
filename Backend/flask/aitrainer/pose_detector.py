@@ -68,7 +68,7 @@ def predictPose(frame, modelPath, leanPath=None, hipsPath=None):
             #     talk("Move to right")
             #     # return image
 
-            if body_language_class == 'down' and body_language_prob[body_language_prob.argmax()] >= 0.5:
+            if body_language_class == 'down' and body_language_prob[body_language_prob.argmax()] >= 0.6:
                 if current_stage != 'down':
                     current_stage = 'down'
                     print("current_stage: down")
@@ -97,4 +97,4 @@ def predictPose(frame, modelPath, leanPath=None, hipsPath=None):
             print(e)
             pass
         
-        return image
+        return image, counter

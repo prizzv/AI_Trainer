@@ -24,7 +24,7 @@ def handle_video_stream(data):
 
     convertedFrame = None
     if(modelName == "deadlift"):
-        convertedFrame = predictPose(frame, "aitrainer/models/deadlift/deadlift.pkl", "aitrainer/models/deadlift/lean.pkl", "aitrainer/models/deadlift/hips.pkl")        
+        convertedFrame, newCounter = predictPose(frame, "aitrainer/models/deadlift/deadlift.pkl", "aitrainer/models/deadlift/lean.pkl", "aitrainer/models/deadlift/hips.pkl")        
     else:
         convertedFrame = predictPose(frame, "aitrainer/models/push-up/push-up.pkl", None, None)
 
@@ -35,6 +35,7 @@ def handle_video_stream(data):
 
     newData = {
         'dataURL': convertedDataUrl,
+        'counter': newCounter
     }
 
     emit('video_stream', newData, broadcast=True)

@@ -7,6 +7,7 @@ const App = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
   const [capturedFrame, setCapturedFrame] = useState();
+  const [counter, setCounter] = useState(0);
 
   const socket = useSocket();
 
@@ -19,14 +20,15 @@ const App = () => {
   }
 
   const handlevideoStream = useCallback(async (data) => {
-    const { dataURL } = data;
+    const { dataURL, counter } = data;
 
+    setCounter(counter);
     setCapturedFrame(dataURL);
   }, [])
 
   useEffect(() => {
     if (isRecording) {
-      const id = setInterval(() => captureFrame(counter, currentStage), 110); // Ideal interval 
+      const id = setInterval(captureFrame, 110); // Ideal interval 
       // const id = setInterval(captureFrame, 4000);
       setIntervalId(id);
     } else {
@@ -42,7 +44,7 @@ const App = () => {
     return () => socket.off('video_stream', handlevideoStream);
   }, []);
 
-  const captureFrame = (counter, currentStage) => {
+  const captureFrame = () => {
     if (webcamRef.current) {
       const canvas = webcamRef.current.getCanvas();
       if (canvas) {
@@ -50,11 +52,8 @@ const App = () => {
         const data = {
           modelName: 'deadlift',
           counter,
-          currentStage,
           dataURL
         };
-
-        console.log(data);
 
         // Do the socket call here to send the dataURL to the server
         socket.emit('video_stream', data);
@@ -79,8 +78,7 @@ const App = () => {
       {(capturedFrame != null) ? <img src={capturedFrame} alt="captured frame" /> : null}
       <div>
         counter: {counter}
-        <br />
-        current stage: {currentStage}
+
       </div>
 
     </div>
