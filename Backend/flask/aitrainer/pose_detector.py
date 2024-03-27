@@ -55,18 +55,27 @@ def predictPose(frame, modelPath, leanPath=None, hipsPath=None):
             X = pd.DataFrame([row],columns=landmarks[1:])
             body_language_class = model.predict(X)[0]
             body_language_prob = model.predict_proba(X)[0]
-            print('body model',body_language_class,body_language_prob)
+            # print('body model',body_language_class,body_language_prob)
             
-            # lean_class = leanModel.predict(X)[0]
-            # # lean_proba = leanModel.predict_proba(X)[0]
-            # print('lean model', lean_class)
+            lean_class = leanModel.predict(X)[0]
+            hips_class = hipsModel.predict(X)[0]
+            # lean_proba = leanModel.predict_proba(X)[0]
+            print('lean model', lean_class)
+            
+            data = {'leanClass': lean_class, 'hipsClass': hips_class}
 
             # if(lean_class == 'right'):
-            #     talk("Move to left")
+            #     emit('leanClass', data)
             #     # return image
             # elif(lean_class == 'left'):
-            #     talk("Move to right")
+            #     emit('leanClass', data)
             #     # return image
+            # elif(lean_class == 'neutral'):
+            #     emit('leanClass', data)
+            #     # return image
+
+            emit('extraClasses', data)
+
 
             if body_language_class == 'down' and body_language_prob[body_language_prob.argmax()] >= 0.6:
                 if current_stage != 'down':
