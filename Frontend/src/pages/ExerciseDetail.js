@@ -7,6 +7,9 @@ import Detail from '../components/Detail';
 import ExerciseVideos from '../components/ExerciseVideos';
 import SimilarExercises from '../components/SimilarExercises';
 
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+
 const ExerciseDetail = () => {
   const [exerciseDetail, setExerciseDetail] = useState({});
   const [exerciseVideos, setExerciseVideos] = useState([]);
@@ -41,9 +44,11 @@ const ExerciseDetail = () => {
 
   return (
     <Box sx={{ mt: { lg: '96px', xs: '60px' } }}>
+      <Navbar />
       <Detail exerciseDetail={exerciseDetail} />
       <ExerciseVideos exerciseVideos={exerciseVideos} name={exerciseDetail.name} />
       <SimilarExercises targetMuscleExercises={targetMuscleExercises} equipmentExercises={equipmentExercises} />
+      <Footer />
     </Box>
   );
 };
