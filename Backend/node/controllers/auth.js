@@ -69,8 +69,8 @@ const register = async (req, res) => {
         newUserAuth.accessToken = token.accessToken;
         newUserAuth.refreshToken = token.refreshToken;
 
-        // await newUserAuth.save();
-        // await newUser.save();
+        await newUserAuth.save();
+        await newUser.save();
         data = newUser._doc;
         data = { ...data, token };
 
