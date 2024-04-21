@@ -5,10 +5,14 @@ import { FaUser, FaLock, FaRegCalendar } from 'react-icons/fa';
 import { GiBodyHeight } from 'react-icons/gi';
 import { MdOutlineDriveFileRenameOutline } from 'react-icons/md';
 import { PiIdentificationBadgeDuotone } from 'react-icons/pi';
+import axios from 'axios';
+import { baseURL } from '../../constants';
+import Cookies from 'js-cookie';
 
 const Signup = () => {
     const [formData, setFormData] = useState({
-        username: '',
+        email: '',
+        userName: '',
         password: '',
         name: '',
         age: '',
@@ -28,14 +32,30 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        //backend
+        //backend api calling
         try {
-            console.log('Form data:', formData);
-            // const response = //TODO: make a POST request to the server using axios
 
-            if (response.ok) {
+            // const response = //TODO: make a POST request to the server using axios
+            const options = {
+                method: 'POST',
+                url: `${baseURL}/auth/register`,
+                headers: { 'content-type': 'application/json' },
+                data: formData
+            }
+
+            const response = await axios.request(options);
+
+            console.log('Response:', response.data)
+
+
+            if (response.status === 200 || response.status === 201) {
+                const accessToken = response.data.data.token.accessToken;
+                const refreshToken = response.data.data.token.refreshToken;
+                Cookies.set('accessToken', accessToken, { expires: 7 })
+                Cookies.set('refreshToken', refreshToken, { expires: 30 })
+
                 // check
-                navigate('/login');
+                navigate('/');
             } else {
                 console.error('Signup failed:', response.statusText);
             }
@@ -51,11 +71,23 @@ const Signup = () => {
                     <h1>Signup</h1>
                     <div className='input-box'>
                         <input
+                            type='email'
+                            name='email'
+                            placeholder='Email'
+                            required
+                            value={formData.email}
+                            onChange={handleChange}
+                        />
+                        <FaUser className='icon' />
+                    </div>
+
+                    <div className='input-box'>
+                        <input
                             type='text'
-                            name='username'
+                            name='userName'
                             placeholder='Username'
                             required
-                            value={formData.username}
+                            value={formData.userName}
                             onChange={handleChange}
                         />
                         <FaUser className='icon' />

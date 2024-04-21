@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import { Box } from '@mui/material';
 
 import { exerciseOptions, fetchData, youtubeOptions } from '../utils/fetchData';
@@ -9,6 +9,8 @@ import SimilarExercises from '../components/SimilarExercises';
 
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import Cookies from 'js-cookie';
+import { isUserAuthenticated } from '../utils/authUtils';
 
 const ExerciseDetail = () => {
   const [exerciseDetail, setExerciseDetail] = useState({});
@@ -39,8 +41,11 @@ const ExerciseDetail = () => {
 
     fetchExercisesData();
   }, [id]);
+  const userAuthenticatedbool = isUserAuthenticated();
 
-  if (!exerciseDetail) return <div>No Data</div>;
+  if (!userAuthenticatedbool) {
+    return <Navigate to="/login" />;
+  }
 
   return (
     <Box sx={{ mt: { lg: '96px', xs: '60px' } }}>

@@ -17,6 +17,7 @@
     background-size: cover;
     background-position: center;
     height: 100vh;
+    margin: 0;
 }
 
 .wrapper h1 {

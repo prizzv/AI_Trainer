@@ -5,6 +5,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const dotenv = require("dotenv");
 const multer = require("multer");
+const cors = require("cors");
 
 const Database = require("./config/db");
 const indexRouter = require("./routes/index");
@@ -23,6 +24,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+app.use(cors());
 
 const db = new Database(process.env.DB_URL);
 

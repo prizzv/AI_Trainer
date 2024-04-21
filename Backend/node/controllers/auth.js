@@ -12,8 +12,7 @@ const {
 // create a new user
 const register = async (req, res) => {
     try {
-        const { email, password, userName, name, age, height, gender } =
-            req.body;
+        const { email, password, userName, name, age, height, gender } = req.body;
 
         // check if all fields are provided
         if (

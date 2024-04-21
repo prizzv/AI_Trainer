@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Stack } from '@mui/material';
 
 import Logo from '../assets/images/Logo.png';
+import { logoutUser } from '../utils/authUtils';
 
 const Navbar = () => (
   <Stack direction="row" justifyContent="space-around" sx={{ gap: { sm: '123px', xs: '40px' }, mt: { sm: '32px', xs: '20px' }, justifyContent: 'none' }} px="20px">
@@ -20,6 +21,7 @@ const Navbar = () => (
 
       <a href="#exercises" style={{ textDecoration: 'none', color: '#3A1212' }}>Exercises</a>
       <Link to="/exercise/live" style={{ textDecoration: 'none', color: '#3A1212' }}>Live Exercise</Link>
+      <button onClick={logoutUser} style={{ textDecoration: 'none', color: '#3A1212' }}>Logout</button>
     </Stack>
   </Stack>
 );

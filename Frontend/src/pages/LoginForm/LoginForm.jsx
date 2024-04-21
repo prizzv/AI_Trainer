@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './LoginForm.css';
 import { FaUser, FaLock } from 'react-icons/fa';
+import axios from 'axios';
+import { baseURL } from '../../constants';
+import Cookies from 'js-cookie';
 
 const LoginForm = () => {
-    const [formData, setFormData] = useState({ username: '', password: '' });
+    const [formData, setFormData] = useState({ email: '', password: '' });
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -16,20 +19,34 @@ const LoginForm = () => {
 
         // backend send
         try {
-            const response = await fetch('/login', {
+            // const response = await fetch('/login', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify(formData),
+            // });
+            const options = {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
+                url: `${baseURL}/auth/login`,
+                headers: { 'content-type': 'application/json' },
+                data: formData
+            }
 
-            if (response.ok) {
+            const response = await axios.request(options);
 
-                navigate('/dashboard'); //website
+            console.log('Response:', response.data)
+
+
+            if (response.status === 200 || response.status === 201) {
+                const accessToken = response.data.data.token.accessToken;
+                const refreshToken = response.data.data.token.refreshToken;
+                Cookies.set('accessToken', accessToken, { expires: 7 })
+                Cookies.set('refreshToken', refreshToken, { expires: 30 })
+
+                // check
+                navigate('/');
             } else {
-
-
                 const data = await response.json();
                 console.error('Login failed:', data.error);
 
@@ -47,10 +64,10 @@ const LoginForm = () => {
                     <div className='input-box'>
                         <input
                             type='text'
-                            name='username'
-                            placeholder='Username'
+                            name='email'
+                            placeholder='Email'
                             required
-                            value={formData.username}
+                            value={formData.email}
                             onChange={handleChange}
                         />
                         <FaUser className='icon' />
@@ -79,7 +96,7 @@ const LoginForm = () => {
 
                     <div className='register-link'>
                         <p>
-                            Don't have an account? <Link to='/'>Register</Link>
+                            Don't have an account? <Link to='/signup'>Register</Link>
                         </p>
                     </div>
                 </form>
