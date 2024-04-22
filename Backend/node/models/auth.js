@@ -26,7 +26,7 @@ const authSchema = new Schema({
     role: {
         type: String,
     },
-});
+}, { collection: "auth" });
 
 authSchema.statics.findByCredentials = async (email, password) => {
     try {
@@ -45,6 +45,6 @@ authSchema.statics.findByCredentials = async (email, password) => {
     }
 };
 
-const Auth = mongoose.model("Auth", authSchema);
+const Auth = mongoose.model("auth", authSchema);
 
 module.exports = Auth;

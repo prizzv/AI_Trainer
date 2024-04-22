@@ -71,6 +71,7 @@ const register = async (req, res) => {
 
         await newUserAuth.save();
         await newUser.save();
+
         data = newUser._doc;
         data = { ...data, token };
 

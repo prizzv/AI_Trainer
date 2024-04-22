@@ -6,7 +6,6 @@ const userProfileSchema = new Schema({
     authId: {
         type: Schema.Types.ObjectId,
         ref: "Auth",
-        required: true,
     },
     name: {
         type: String,
@@ -23,8 +22,8 @@ const userProfileSchema = new Schema({
         type: String,
         enum: Object.values(GenderType),
     },
-});
+}, { collection: "userprofile" });
 
-const UserProfile = mongoose.model("UserProfile", userProfileSchema);
+const UserProfiles = mongoose.model("userprofile", userProfileSchema);
 
-module.exports = UserProfile;
+module.exports = UserProfiles;
